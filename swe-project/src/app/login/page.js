@@ -1,56 +1,95 @@
-import Image from "next/image";
-import styles from "./../page.module.css";
-import styled from "styled-components";
-import '@fontsource/roboto/300.css'; //is this for real
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import IconButton from '@mui/material/IconButton';
+'use client'
 
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
+import styles from './auth.module.css'
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      light: '#757ce8',
-      main: '#3f50b5',
-      dark: '#002884',
-      contrastText: '#fff',
-    },
-    secondary: {
-      light: '#ffca61',
-      main: '#f4b536',
-      dark: '#ba7f00',
-      contrastText: '#000',
-    },
-  },
-});
+function LoginForm() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackError = searchParams.get('error')
 
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(
+    callbackError === 'auth_callback_failed'
+      ? 'Email confirmation failed. Please try again.'
+      : ''
+  )
+  const [loading, setLoading] = useState(false)
 
+  async function handleLogin(e) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
 
-export default function Page() {
-  
-  
+    const supabase = createClient()
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (loginError) {
+      setError(loginError.message)
+      setLoading(false)
+    } else {
+      router.push('/mainpage')
+    }
+  }
+
   return (
-      <div className={styles.page}>
-        <main className={styles.login}>
-          <Image
-          className={styles.logo}
-          src="/globe.svg"
-          alt="website logo"
-          width={100}
-          height={20}
-          priority
-          />
-          <TextField fullWidth id="filled-basic" label="Username" variant="filled" size="large" />
-          <TextField id="filled-basic" label="Password" variant="filled" type="password" size="large" />
-          <div>
-            <Button color="primary" variant="contained" size="large">Register</Button>{" "}
-            <Button color="primary" variant="contained" size="large">Log In</Button>
+    <div className={styles.page}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Welcome Back</h1>
+        <p className={styles.subtitle}>Log in to manage your medications</p>
+
+        <form className={styles.form} onSubmit={handleLogin}>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="email">Email</label>
+            <input
+              id="email"
+              className={styles.input}
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
           </div>
-        </main>
+
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="password">Password</label>
+            <input
+              id="password"
+              className={styles.input}
+              type="password"
+              placeholder="Your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+          </div>
+
+          {error && <p className={styles.error}>{error}</p>}
+
+          <button className={styles.button} type="submit" disabled={loading}>
+            {loading ? 'Logging in...' : 'Log In'}
+          </button>
+        </form>
+
+        <p className={styles.link}>
+          Don&apos;t have an account? <Link href="/signup">Sign up</Link>
+        </p>
       </div>
-  );
+    </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  )
 }

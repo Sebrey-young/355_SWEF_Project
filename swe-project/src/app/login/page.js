@@ -1,50 +1,56 @@
 import Image from "next/image";
 import styles from "./../page.module.css";
+import styled from "styled-components";
+import '@fontsource/roboto/300.css'; //is this for real
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import IconButton from '@mui/material/IconButton';
+
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      light: '#757ce8',
+      main: '#3f50b5',
+      dark: '#002884',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#ffca61',
+      main: '#f4b536',
+      dark: '#ba7f00',
+      contrastText: '#000',
+    },
+  },
+});
+
+
 
 export default function Page() {
+  
+  
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-{/*         <Image
+      <div className={styles.page}>
+        <main className={styles.login}>
+          <Image
           className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
+          src="/globe.svg"
+          alt="website logo"
           width={100}
           height={20}
           priority
-        /> */}
-        <div className={styles.intro}>
-          <h1>This is the start of our project!!!!</h1>
-          <p>
-          These are more words. aijfsiofjfojaiojjio
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          />
+          <TextField fullWidth id="filled-basic" label="Username" variant="filled" size="large" />
+          <TextField id="filled-basic" label="Password" variant="filled" type="password" size="large" />
+          <div>
+            <Button color="primary" variant="contained" size="large">Register</Button>{" "}
+            <Button color="primary" variant="contained" size="large">Log In</Button>
+          </div>
+        </main>
+      </div>
   );
 }
